@@ -72,16 +72,79 @@ class RegisteredUsers{
 
 //Classes for sales reports
 class SalesData{
-    
+
+    public static void Report(){
+        Scanner takeIn = new Scanner(System.in);
+        System.out.println("Welcome, CEO. Would you like to view the monthly or daily report?");
+        System.out.println("1. Daily Sales Report");
+        System.out.println("2. Montly Sales Report");
+        int chooseCEO = takeIn.nextInt();
+
+        switch(chooseCEO){
+            case 1:
+                displayDailyProfit(Item.items);
+                break;
+            case 2:
+                displayMonthlyProfit(Item.items);
+                break;
+            default:
+                System.out.println("invalid input");
+        }
+    }
+    public static void displayDailyProfit(Item[] items) {
+        System.out.println("Daily Profit Report:");
+        double totalProfit = 0;
+
+        for (Item item : items) {
+            double itemProfit = item.qtySold * item.price;
+            totalProfit += itemProfit;
+
+            System.out.println("Item: " + item.itemName +
+                    ", Quantity Sold: " + item.qtySold +
+                    ", Profit: $" + itemProfit);
+        }
+
+        System.out.println("Total Profit for the Day: $" + totalProfit);
+        System.out.println("----------------------------");
+    }
+
+    public static void displayMonthlyProfit(Item[] items) {
+        System.out.println("Monthly Profit Report:");
+
+        double totalSales = 0;
+        double totalProfit = 0;
+
+        for (Item item : items) {
+            double itemSales = item.qtySold * item.price;
+            totalSales += itemSales;
+
+            double itemProfit = item.qtySold * item.price;
+            totalProfit += itemProfit;
+        }
+
+        System.out.println("Total Sales for the Month: $" + totalSales);
+        System.out.println("Total Profit for the Month: $" + totalProfit);
+        System.out.println("----------------------------");
+    }
 }
+
 
 //Collection of classes contributing to Displaying and Interacting with Item Information
 class Item{
-    int itemID, itemQty;
+    int itemID, itemQty, qtySold;
     String itemName, description;
     double price;
 
-    public Item(int id, String name, String desc, double price, int itemQty){
+    public Item(int id, String name, String desc, double price, int itemQty, int qtySold){
+        this.itemID = id;
+        this.itemName = name;
+        this.description = desc;
+        this.price = price;
+        this.itemQty = itemQty;
+        this.qtySold = qtySold;
+    }
+
+    public Item(int id, String name, String desc, double price, int itemQty) {
         this.itemID = id;
         this.itemName = name;
         this.description = desc;
@@ -109,9 +172,12 @@ class Item{
     static ArrayList<Item> wishlist = new ArrayList<>();
 
     static Item[] items = {
-            new Item(1, "chair", "A chair", 55.00, 5),
-            new Item(2, "couch", "A couch", 105.00, 8),
-            new Item(3, "table", "A table", 80.00, 3)
+            new Item(1, "chair", "A chair", 55.00, 5, 20),
+            new Item(2, "couch", "A couch", 105.00, 0, 30),
+            new Item(3, "table", "A table", 80.00, 3, 10),
+            new Item(4, "lamp", "A lamp", 20.00, 0, 25),
+            new Item(5, "desk", "A desk", 80.00, 10, 15),
+            new Item(6, "shelf", "A shelf", 30.00, 20, 5)
     };
 }
 class AddRemoveItem{
@@ -453,7 +519,7 @@ public class Main {
             backend.Backend(Item.items);
         }
         else if(userStatus.equals("CEO")){
-            Report report = new Report();
+
         }
 
     }
