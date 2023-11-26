@@ -63,8 +63,10 @@ class RegisteredUsers{
             new RegisteredUsers("boschlive@outlook.com", "Eggplant1", "CEO"),
             new RegisteredUsers("thejuice@gmail.com", "Ballin", "Customer"),
             new RegisteredUsers("anon@yahoo.com", "Password1", "Customer"),
+            new RegisteredUsers("mallcustomer@outlook.com", "ABC123", "Customer"),
             new RegisteredUsers("bscruggs@troy.edu", "JakeDog", "Staff"),
-            new RegisteredUsers("alken@outlook.com", "Rush2112", "Staff")
+            new RegisteredUsers("alken@outlook.com", "Rush2112", "Staff"),
+            new RegisteredUsers("mallworker@gmail.com", "staffpassword", "Staff")
     };
 }
 
@@ -82,16 +84,16 @@ class SalesData{
 
         switch(chooseCEO){
             case 1:
-                displayDailyProfit(Item.items);
+                DailyReport(Item.items);
                 break;
             case 2:
-                displayMonthlyProfit(Item.items);
+                MonthlyReport(Item.items);
                 break;
             default:
                 System.out.println("invalid input");
         }
     }
-    public static void displayDailyProfit(Item[] items) {
+    public static void DailyReport(Item[] items) {
         System.out.println("Daily Profit Report:");
         double totalProfit = 0;
 
@@ -108,7 +110,7 @@ class SalesData{
         System.out.println("----------------------------");
     }
 
-    public static void displayMonthlyProfit(Item[] items) {
+    public static void MonthlyReport(Item[] items) {
         System.out.println("Monthly Profit Report:");
 
         double totalSales = 0;
@@ -159,17 +161,34 @@ class Item{
                 if (item.itemID == itemID) {
                     wishlist.add(item);
                     System.out.println(item.itemName + " added to the wishlist.");
-                    CustomerFrontend frontend = new CustomerFrontend();
-                    frontend.Frontend(items);
                     return;
                 }
             }
         } else {
             System.out.println("Item with ID " + itemID + " is out of stock. Cannot be added to the wishlist.");
         }
+        CustomerFrontend frontend = new CustomerFrontend();
+        frontend.Frontend(items);
+    }
+
+    public static void addToLikedList(int itemID) {
+        for (Item item : items) {
+            if (item.itemID == itemID) {
+                if (!likesList.contains(item)) {
+                    likesList.add(item);
+                    System.out.println(item.itemName + " is in your liked items.");
+                } else {
+                    System.out.println(item.itemName + " is already in your liked items.");
+                }
+                return;
+            }
+        }
+        CustomerFrontend frontend = new CustomerFrontend();
+        frontend.Frontend(items);
     }
 
     static ArrayList<Item> wishlist = new ArrayList<>();
+    static ArrayList<Item> likesList = new ArrayList<>();
 
     static Item[] items = {
             new Item(1, "chair", "A chair", 55.00, 5, 20),
@@ -187,6 +206,7 @@ class AddRemoveItem{
 
         items = Arrays.copyOf(items, items.length + 1);
         items[items.length - 1] = newItem;
+        System.out.println("New item Added!");
         StaffBackend backend = new StaffBackend();
         backend.Backend(Item.items);
     }
@@ -202,6 +222,7 @@ class AddRemoveItem{
                 break; // Exit the loop once the item is removed
             }
         }
+        //
         StaffBackend backend = new StaffBackend();
         backend.Backend(Item.items);
     }
@@ -226,6 +247,7 @@ class RefillStock{
             if (item.itemID == itemId) {
                 item.itemQty += additionalQty;
                 System.out.println("Item quantity refilled successfully.");
+                System.out.println("Updated Item QTY: " + item.itemQty);
                 return; // Once the item is found and quantity refilled, exit the loop
             }
         }
@@ -246,12 +268,11 @@ class ItemInteraction{
                 }
                 break;
             case 2:
-                // Implement add to wishlist logic (you can add a method for this)
                 Item.addToWishlist(ID);
                 break;
             case 3:
                 // Implement like item logic (you can add a method for this)
-                System.out.println("Item liked!");
+                Item.addToLikedList(ID);
                 break;
             case 4:
                 // User wants to return to the item list
@@ -335,20 +356,29 @@ class CustomerFrontend {
             else {
                 System.out.println("To chat with support staff, press 1");
                 System.out.println("To view your wishlist, press 2");
+                System.out.println("To view your liked items, press 3");
                 int nextSelect = takeIn.nextInt();
 
                 switch (nextSelect){
                     case 1:
                         Chatbox message = new Chatbox();
-                        message.messageBody();
+                        message.openChat();
                         break;
                     case 2:
                         for (Item item : Item.wishlist) {
                             System.out.println("Item ID: " + item.itemID);
                             System.out.println("Item Name: " + item.itemName);
+                            System.out.println("Stock: " + item.itemQty);
                             System.out.println();
                         }
                         break;
+                    case 3:
+                        for (Item item : Item.likesList) {
+                            System.out.println("Item ID: " + item.itemID);
+                            System.out.println("Item Name: " + item.itemName);
+                            System.out.println("Stock: " + item.itemQty);
+                            System.out.println();
+                        }
                     default:
                         System.out.println("Not a valid input");
                         break;
@@ -367,6 +397,7 @@ class CustomerFrontend {
             System.out.println("Name: " + selectedItem.get().itemName);
             System.out.println("Description: " + selectedItem.get().description);
             System.out.println("Price: " + selectedItem.get().price);
+            System.out.println("Stock: " + selectedItem.get().itemQty);
 
             System.out.println("\nOptions:");
             System.out.println("1. Buy the item");
@@ -396,6 +427,8 @@ class StaffBackend{
         System.out.println("2. Delete an Item from inventory");
         System.out.println("3. Edit an Item's info");
         System.out.println("4. Refill Item inventory");
+        System.out.println("5. Respond to customer support request");
+        System.out.println("6. View customer data");
         int staffSelect = takeIn.nextInt();
 
         switch (staffSelect){
@@ -409,6 +442,11 @@ class StaffBackend{
             case 4:
                 Refill_Stock();
                 break;
+            case 5:
+                Chatbox message = new Chatbox();
+                message.replyTo();
+            case 6:
+
             default:
                 System.out.println("Not a valid input");
                 break;
@@ -471,6 +509,21 @@ class StaffBackend{
         StaffBackend backend = new StaffBackend();
         backend.Backend(Item.items);
     }
+
+    void viewCustomerInfo(){
+        for(RegisteredUsers user : RegisteredUsers.users){
+            if(user.status.equals("Customer")){
+                System.out.println("Email: " + user.email);
+                System.out.println("Password: " + user.PW);
+                System.out.println();
+            }
+        }
+        Scanner takeIn = new Scanner(System.in);
+        System.out.println("Press any key to return to options");
+        takeIn.nextLine();
+        StaffBackend backend = new StaffBackend();
+        backend.Backend(Item.items);
+    }
 }
 
 
@@ -479,10 +532,18 @@ class StaffBackend{
 class Chatbox{
     String message;
 
-    void messageBody(){
+    void openChat(){
         Scanner takeIn = new Scanner(System.in);
         System.out.println("Staff: Hello! I am a representative. How can I help you today?");
         System.out.println("Please enter your message: ");
+        message = takeIn.nextLine();
+        MessageCoordinator send = new MessageCoordinator(message);
+    }
+
+    void replyTo(){
+        Scanner takeIn = new Scanner(System.in);
+        System.out.println("User: Hello! I need help. How can I wishlist items?");
+        System.out.println("Please enter your reply: ");
         message = takeIn.nextLine();
         MessageCoordinator send = new MessageCoordinator(message);
     }
@@ -519,7 +580,7 @@ public class Main {
             backend.Backend(Item.items);
         }
         else if(userStatus.equals("CEO")){
-
+            SalesData.Report();
         }
 
     }
