@@ -3,6 +3,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.Arrays;
 
+//Final version
 
 //Collection of classes contributing to signing a user in
 class Interface{
@@ -156,7 +157,6 @@ class Item{
 
     public static void addToWishlist(int itemID) {
         if (CheckStock.checkStock(itemID)) {
-            // If in stock, find the item and add it to the wishlist
             for (Item item : items) {
                 if (item.itemID == itemID) {
                     wishlist.add(item);
@@ -213,16 +213,13 @@ class AddRemoveItem{
     void RemoveItem(Item[] items, int ID){
         for (int i = 0; i < items.length; i++) {
             if (items[i].itemID == ID) {
-                // Remove the item by shifting elements
                 for (int j = i; j < items.length - 1; j++) {
                     items[j] = items[j + 1];
                 }
-                // Resize the array
                 items = Arrays.copyOf(items, items.length - 1);
-                break; // Exit the loop once the item is removed
+                break;
             }
         }
-        //
         StaffBackend backend = new StaffBackend();
         backend.Backend(Item.items);
     }
@@ -248,7 +245,7 @@ class RefillStock{
                 item.itemQty += additionalQty;
                 System.out.println("Item quantity refilled successfully.");
                 System.out.println("Updated Item QTY: " + item.itemQty);
-                return; // Once the item is found and quantity refilled, exit the loop
+                return;
             }
         }
         System.out.println("Item with ID " + itemId + " not found.");
@@ -258,7 +255,6 @@ class ItemInteraction{
     void InteractionRequest(Item[] items, int ID, int request){
         switch (request) {
             case 1:
-                // Implement buy item logic (you can add a method for this)
                 if(CheckStock.checkStock(ID)){
                     Purchase transaction = new Purchase();
                     transaction.PurchaseItem(Item.items, ID);
@@ -271,11 +267,9 @@ class ItemInteraction{
                 Item.addToWishlist(ID);
                 break;
             case 3:
-                // Implement like item logic (you can add a method for this)
                 Item.addToLikedList(ID);
                 break;
             case 4:
-                // User wants to return to the item list
                 CustomerFrontend frontend = new CustomerFrontend();
                 frontend.Frontend(items);
                 break;
@@ -298,13 +292,13 @@ class Purchase{
             System.out.println("Enter card number:");
             long cardNumber = scanner.nextLong();
 
-            // Pretend to verify the card number (you may implement a real verification logic here)
+
             boolean isCardVerified = verifyCardNumber(cardNumber);
 
             if (isCardVerified) {
                 System.out.println("Purchase successful!");
 
-                // Decrease the item quantity by 1
+
             } else {
                 System.out.println("Card verification failed. Purchase unsuccessful.");
             }
@@ -314,9 +308,7 @@ class Purchase{
     }
 
     private boolean verifyCardNumber(long cardNumber) {
-        // Pretend verification logic
-        // You may implement a real verification logic based on your requirements
-        return cardNumber > 0;  // Just a simple example
+        return cardNumber > 0;
     }
 }
 class CheckStock{
@@ -392,7 +384,6 @@ class CustomerFrontend {
                 .findFirst();
 
         if (selectedItem.isPresent()) {
-            // Item found, display details
             System.out.println("Name: " + selectedItem.get().itemName);
             System.out.println("Description: " + selectedItem.get().description);
             System.out.println("Price: " + selectedItem.get().price);
@@ -411,7 +402,6 @@ class CustomerFrontend {
 
 
         } else {
-            // Item not found
             System.out.println("Item with ID " + ID + " not found.");
         }
 
@@ -428,6 +418,7 @@ class StaffBackend{
         System.out.println("4. Refill Item inventory");
         System.out.println("5. Respond to customer support request");
         System.out.println("6. View customer data");
+        System.out.println("7. View product data");
         int staffSelect = takeIn.nextInt();
 
         switch (staffSelect){
@@ -444,8 +435,20 @@ class StaffBackend{
             case 5:
                 Chatbox message = new Chatbox();
                 message.replyTo();
+                break;
             case 6:
-
+                viewCustomerInfo();
+                break;
+            case 7:
+                for (Item item : items) {
+                    System.out.println("Item ID: " + item.itemID);
+                    System.out.println("Item Name: " + item.itemName);
+                    System.out.println("Item Qty: " + item.itemQty);
+                    System.out.println();
+                }
+                StaffBackend backend = new StaffBackend();
+                backend.Backend(Item.items);
+                break;
             default:
                 System.out.println("Not a valid input");
                 break;
@@ -484,7 +487,7 @@ class StaffBackend{
 
         System.out.println("Enter the ID of the item to be edited: ");
         int ID = takeIn.nextInt();
-        takeIn.nextLine(); // Consume the newline character
+        takeIn.nextLine();
         System.out.println("Enter new Item Name: ");
         String newName = takeIn.nextLine();
         System.out.println("Enter new Item Description: ");
