@@ -161,10 +161,11 @@ class Item{
                 if (item.itemID == itemID) {
                     wishlist.add(item);
                     System.out.println(item.itemName + " added to the wishlist.");
-                    return;
                 }
             }
-        } else {
+        }
+
+        else {
             System.out.println("Item with ID " + itemID + " is out of stock. Cannot be added to the wishlist.");
         }
         CustomerFrontend frontend = new CustomerFrontend();
@@ -180,7 +181,6 @@ class Item{
                 } else {
                     System.out.println(item.itemName + " is already in your liked items.");
                 }
-                return;
             }
         }
         CustomerFrontend frontend = new CustomerFrontend();
@@ -326,7 +326,6 @@ class CheckStock{
                 return item.itemQty > 0;
             }
         }
-        // Item not found, you might want to handle this case based on your requirements
         System.out.println("Item with ID " + itemID + " not found in the items list.");
         return false;
     }
